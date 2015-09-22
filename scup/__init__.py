@@ -3,11 +3,11 @@ from scup.exceptions import (
 	ScupError,
 	HTTPError
 )
-from scup.auth import get_request_signature
+from scup.scup_api import ScupAPI
 
 __all__ = [
 	ScupPythonError,
 	ScupError,
 	HTTPError,
-	get_request_signature
+	ScupAPI
 ]
