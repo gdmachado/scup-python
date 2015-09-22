@@ -26,8 +26,8 @@ class ScupAPI(object):
 
   def getMonitorings(self):
     """
-    /monitorings
     Get all available monitorings for account
+    Endpoint: /monitorings
     """
 
     response = self._query(
@@ -36,7 +36,25 @@ class ScupAPI(object):
     )
 
     if not response:
-      raise ScupError('Could not get monitorings')
+      raise ScupError('Could not get monitorings.')
+    
+    return response
+
+  def getSearches(self, monitoring_id):
+    """
+    Get all available searches for given monitoring
+    Endpoint: /searches/{monitoring_id}
+
+    :param monitoring_id: ID of monitoring to list searches from
+    """
+
+    response = self._query(
+      method = 'GET', 
+      path = '/searches/{}'.format(monitoring_id),
+    )
+
+    if not response:
+      raise ScupError('Could not get searches for monitoring {}.'.format(monitoring_id))
     
     return response
 
