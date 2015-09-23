@@ -45,7 +45,7 @@ class ScupAPI(object):
     Get all available searches for given monitoring
     Endpoint: /searches/{monitoring_id}
 
-    :param monitoring_id: ID of monitoring to list searches from
+    :param monitoring_id: The monitoring ID.
     """
 
     response = self._query(
@@ -55,6 +55,37 @@ class ScupAPI(object):
 
     if not response:
       raise ScupError('Could not get searches for monitoring {}.'.format(monitoring_id))
+    
+    return response
+
+  def getMentions(self, monitoring_id, **params):
+    """
+    Get all available mentions for given monitoring
+    Endpoint: /mentions/{monitoring_id}
+
+    :param monitoring_id: The monitoring ID.
+    :param searches_ids: The search ID. It accepts multiple IDs separated by pipe. Example: 19478|19479.
+    :param published_date: The date interval the mentions where published (YYYY-MM-DD). Example: 2014-10-22 01:00:00|2014-10-23 23:00:00.
+    :param tags_ids: The tag ID. It accepts multiple IDs separated by pipe. Example: <tag1>|<tag2>|<tag3>|...|<tagn>.
+    :param sentiment: The sentiment of the mention (positive, negative, mixed or neutral). Example: positive.
+    :param user_id: The user ID. Example: 225598.
+    :param social_network: The Social Network of the user ('linkedin', 'googleplus','foursquare', 'twitter', 'blog', 'flickr', 'youtube', 'yahooanswers', 'facebook', 'slideshare', 'vimeo', 'instagram'). Required if "social_network_user_id" is set. Example: facebook.
+    :param social_network_user_id: The Social Social Network user ID. Required if "social_network" is set. Example: john.lemmnh59.
+    :param document: The user's document (Brazilian CPF, for example). Example: 48199876609.
+    :param email: The user's e-mail. Example: client@hotmail.com.
+    :param mention_id: The mention ID. Example: 33455.
+    :param ipp: Number of items per page. Limited to 100. Example: 100.
+    :param page: The page number to filter the results. Example: 5.
+    """
+
+    response = self._query(
+      method = 'GET', 
+      path = '/mentions/{}'.format(monitoring_id),
+      params = params
+    )
+
+    if not response:
+      raise ScupError('Could not get mentiojns for monitoring {}.'.format(monitoring_id))
     
     return response
 
