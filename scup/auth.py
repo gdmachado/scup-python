@@ -2,10 +2,10 @@ import hashlib
 import time
 
 def get_request_signature(private_key):
-	current_time = int(time.time())
+    current_time = int(time.time())
 
-	message = '{}{}'.format(current_time, private_key)
+    message = '{}{}'.format(current_time, private_key)
 
-	digest = hashlib.md5(message).hexdigest()
+    digest = hashlib.md5(message).hexdigest()
 
-	return current_time, digest
+    return current_time, digest

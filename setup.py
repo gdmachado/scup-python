@@ -12,14 +12,14 @@ setup(
     packages = ['scup'],
     install_requires = ['requests >= 0.8', 'six >= 1.6'],
     classifiers = [
-		'Development Status :: 2 - Pre-Alpha',
-		'Intended Audience :: Developers',
-		'Programming Language :: Python',
-		'Natural Language :: English',
-		'License :: OSI Approved :: Apache Software License',
-		'Programming Language :: Python :: 2.6',
-		'Programming Language :: Python :: 2.7',
-		'Topic :: Software Development :: Libraries',
+        'Development Status :: 2 - Pre-Alpha',
+        'Intended Audience :: Developers',
+        'Programming Language :: Python',
+        'Natural Language :: English',
+        'License :: OSI Approved :: Apache Software License',
+        'Programming Language :: Python :: 2.6',
+        'Programming Language :: Python :: 2.7',
+        'Topic :: Software Development :: Libraries',
         'Operating System :: OS Independent'
     ]
 )
