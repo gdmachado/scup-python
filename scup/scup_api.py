@@ -1,14 +1,4 @@
-try:
-  import simplejson as json
-except ImportError:
-  import json
-import requests
-import six
-
-from scup.exceptions import *
 from scup.bind import bind_method
-from scup.auth import get_request_signature
-
 
 class ScupAPI(object):
   def __init__(self, public_key, private_key, url='http://api.scup.com/1.1', timeout=None):
@@ -114,4 +104,3 @@ class ScupAPI(object):
     accepts_parameters=['monitoring_id', 'ticket_id', 'ipp', 'page']
   )
 
-  
