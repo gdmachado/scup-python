@@ -55,13 +55,13 @@ def bind_method(**config):
         try:
           value = quote(self.parameters[name])
         except KeyError:
-          raise Exception('No parameter value found for path variable: {}'.format(name))
+          raise ScupPythonError('Parameter value missing: {}'.format(name))
         del self.parameters[name]
 
         self.path = self.path.replace(variable, value)
 
     def _do_api_request(self, prepared_request):
-      response = self.api.session.send(prepared_request)
+      response = self.api.session.send(prepared_request, timeout=self.api.timeout)
       status_code = response.status_code
 
       try:
@@ -69,24 +69,46 @@ def bind_method(**config):
       except ValueError:
         raise ScupClientError('Unable to parse response, not valid JSON.', code=status_code, error_data=response.content)
 
+      import pdb; pdb.set_trace()
+
       if status_code == 200:
-        return content
-      else:        
-        import pdb; pdb.set_trace()
-        if 'success' in content and not content['success']:
-          raise ScupError(message=content['data']['message'], 
-                          code=content['data']['cod_error'])
+        if content['success']:
+          return content
         else:
-          raise ScupError(message=content['erro'], code=status_code)
+          # Accomodate for Scup API's variability on error response 
+          # message param can be either message or message_error
+          # code param can be either cod_error or error_code
+          # data can be a list or a dict
+          # This happens because api errors are not standardized :(
+          if type(content['data']) == list:
+            # As this is an error, the list will only have one object
+            data = content['data'][0]
+          else:
+            data = content['data']
+          if 'message_error' in data:
+            raise ScupError(message=data['message_error'], 
+                            code=data['error_code'])
+          elif 'message' in data:
+            raise ScupError(message=data['message'], 
+                code=data['cod_error'])
+          else:
+            raise ScupError(message='Unexpected error occurred.', 
+                            code=data['cod_error'])
+      else:
+        raise ScupError(message=content['erro'], code=status_code)
 
     def execute(self):
       # Generate auth params
       time, signature = get_request_signature(self.api.private_key)
       self.parameters['time'] = time
       self.parameters['signature'] = signature
-      self.parameters['public_key'] = self.api.public_key
+      self.parameters['publickey'] = self.api.public_key
 
-      prepared_request = self.api.session.prepare_request(Request(self.method, self.api.url + self.path, params=self.parameters))
+      prepared_request = self.api.session.prepare_request(
+        Request(
+          method  = self.method, 
+          url     = self.api.url + self.path,
+          params  = self.parameters))
 
       content = self._do_api_request(prepared_request)
 
