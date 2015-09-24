@@ -3,7 +3,7 @@ class ScupPythonError(Exception):
 
 
 class ScupError(ScupPythonError):
-	""" Exception for Scup errors. """
+	""" Exception for Scup-related errors. """
 	def __init__(self, message=None, code=None, error_data=None):
 		self.message = message
 		self.code = code
@@ -14,5 +14,17 @@ class ScupError(ScupPythonError):
 
 		super(ScupError, self).__init__(message)
 
+class ScupClientError(ScupPythonError):
+	""" Exception for client-related errors. """
+	def __init__(self, message=None, code=None, error_data=None):
+		self.message = message
+		self.code = code
+		self.error_data = error_data
+
+		if self.code:
+			message = '[{}] {}'.format(self.code, self.message)
+
+		super(ScupClientError, self).__init__(message)
+		
 class HTTPError(ScupPythonError):
 	""" Exception for transport errors. """
