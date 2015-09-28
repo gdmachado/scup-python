@@ -70,28 +70,39 @@ def bind_method(**config):
                 raise ScupClientError('Unable to parse response, not valid JSON.', code=status_code, error_data=response.content)
 
             if status_code == 200:
-                if content['success']:
-                    return content
+                if 'success' in content:
+                    if content['success']:
+                        return content
+                    else:
+                        # Accomodate for Scup API's variability on error response 
+                        # message param can be either message or message_error
+                        # code param can be either cod_error or error_code
+                        # data can be a list or a dict
+                        # This happens because api errors are not standardized :(
+                        if type(content['data']) == list:
+                            # As this is an error, the list will only have one object
+                            data = content['data'][0]
+                        else:
+                            data = content['data']
+                        if 'message_error' in data:
+                            try:
+                                raise ScupError(message=data['message_error'], 
+                                                                code=data['error_code'])
+                            except KeyError:
+                                raise ScupError(message=data['message_error'], 
+                                                                code=data['cod_error'])
+                        elif 'message' in data:
+                            try:
+                                raise ScupError(message=data['message'], 
+                                        code=data['cod_error'])
+                            except KeyError:
+                                raise ScupError(message=data['message'], 
+                                        code=data['error_code'])
+                        else:
+                            raise ScupError(message='Unexpected error occurred.', 
+                                                            code=data['cod_error'])
                 else:
-                    # Accomodate for Scup API's variability on error response 
-                    # message param can be either message or message_error
-                    # code param can be either cod_error or error_code
-                    # data can be a list or a dict
-                    # This happens because api errors are not standardized :(
-                    if type(content['data']) == list:
-                        # As this is an error, the list will only have one object
-                        data = content['data'][0]
-                    else:
-                        data = content['data']
-                    if 'message_error' in data:
-                        raise ScupError(message=data['message_error'], 
-                                                        code=data['error_code'])
-                    elif 'message' in data:
-                        raise ScupError(message=data['message'], 
-                                code=data['cod_error'])
-                    else:
-                        raise ScupError(message='Unexpected error occurred.', 
-                                                        code=data['cod_error'])
+                    raise ScupError(message=content['erro'], code=status_code)
             else:
                 raise ScupError(message=content['erro'], code=status_code)
 
