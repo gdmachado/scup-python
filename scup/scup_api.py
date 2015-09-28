@@ -1,3 +1,5 @@
+import requests
+
 from scup.bind import bind_method
 
 class ScupAPI(object):
