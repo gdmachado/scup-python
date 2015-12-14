@@ -2,8 +2,10 @@ import requests
 
 from scup.bind import bind_method
 
+from Queue import Queue
+
 class ScupAPI(object):
-    def __init__(self, public_key, private_key, url='http://api.scup.com/1.1', timeout=None):
+    def __init__(self, public_key, private_key, url='http://api.scup.com/1.1', timeout=None, logRequests=False):
         """
         Initialize ScupAPI with user's public and private keys.
 
@@ -16,6 +18,10 @@ class ScupAPI(object):
         self.public_key = public_key
         self.url = url.strip('/')
         self.timeout = timeout
+        if logRequests:
+            self.requestQueue = Queue()
+        else:
+            self.requestQueue = None
 
     """
     Get all available monitorings for account

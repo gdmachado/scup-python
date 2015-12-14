@@ -4,11 +4,14 @@ except ImportError:
     import json
 import six
 import re
+import sys
+import time
 
 from six.moves.urllib.parse import quote
 from scup.exceptions import *
 from scup.auth import get_request_signature
 from requests import Request
+from requests.exceptions import ReadTimeout
 
 re_path_template = re.compile('{\w+}')
 
@@ -60,9 +63,26 @@ def bind_method(**config):
 
                 self.path = self.path.replace(variable, value)
 
-        def _do_api_request(self, prepared_request):
-            response = self.api.session.send(prepared_request, timeout=self.api.timeout)
+        def _do_api_request(self, prepared_request, timestamp):
+            try:
+                response = self.api.session.send(prepared_request, timeout=self.api.timeout)
+            except ReadTimeout:
+                raise HTTPError('Timeout reached ({} seconds).'.format(self.api.timeout))
+                
             status_code = response.status_code
+
+            if self.api.requestQueue:
+                request_object = {
+                    'timestamp': timestamp,
+                    'method': prepared_request.method,
+                    'headers': prepared_request.headers,
+                    'url': prepared_request.url,
+                    'path': prepared_request.path_url,
+                    'body': prepared_request.body,
+                    'responseCode': status_code,
+                    'responseContent': response.content}
+                print('putting object in queue')
+                self.api.requestQueue.put(request_object)
 
             try:
                 content = json.loads(response.content)
@@ -119,7 +139,7 @@ def bind_method(**config):
                     url     = self.api.url + self.path,
                     params  = self.parameters))
 
-            content = self._do_api_request(prepared_request)
+            content = self._do_api_request(prepared_request, time)
 
             return content
 
