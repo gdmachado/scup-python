@@ -67,7 +67,7 @@ def bind_method(**config):
             try:
                 response = self.api.session.send(prepared_request, timeout=self.api.timeout)
             except ReadTimeout:
-                raise HTTPError('Timeout reached ({} seconds).'.format(self.api.timeout))
+                raise HTTPTimeoutError('Timeout reached ({} seconds).'.format(self.api.timeout))
                 
             status_code = response.status_code
 

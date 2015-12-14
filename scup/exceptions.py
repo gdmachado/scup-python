@@ -28,3 +28,6 @@ class ScupClientError(ScupPythonError):
         
 class HTTPError(ScupPythonError):
     """ Exception for transport errors. """
+
+class HTTPTimeoutError(HTTPError):
+    """ Exception for transport timeout errors. """
