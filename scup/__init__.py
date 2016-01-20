@@ -10,6 +10,7 @@ from scup.scup_api import ScupAPI
 __all__ = [
     ScupPythonError,
     ScupError,
+    ScupClientError,
     HTTPError,
     HTTPTimeoutError,
     ScupAPI
