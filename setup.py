@@ -4,7 +4,7 @@ readme  = open('README.md').read()
 
 setup(
     name = 'scup-python',
-    version = '0.1.2',
+    version = '0.1.3',
     description = 'Unnofficial Python library for the Scup API v1.1. http://www.scup.com/docs/api',
     author = 'Gustavo Machado',
     author_email = 'gdmachado@me.com',
